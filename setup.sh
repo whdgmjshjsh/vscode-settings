@@ -1,6 +1,6 @@
 #!/bin/bash
 # VS Code Settings Migration Script
-# One-click setup for VS Code settings and extensions
+# One-click setup for VS Code user settings
 
 set -e
 
@@ -59,29 +59,6 @@ backup_settings() {
     fi
 }
 
-install_extensions() {
-    print_step "Installing extensions..."
-    
-    if [ ! -f "$SCRIPT_DIR/extensions.list" ]; then
-        print_error "extensions.list not found!"
-        exit 1
-    fi
-    
-    local total=$(wc -l < "$SCRIPT_DIR/extensions.list" | tr -d ' ')
-    local current=0
-    
-    while IFS= read -r extension; do
-        if [ -n "$extension" ]; then
-            current=$((current + 1))
-            echo -ne "\r${BLUE}Installing extension $current/$total: $extension${NC}"
-            code --install-extension "$extension" --force 2>/dev/null || true
-        fi
-    done < "$SCRIPT_DIR/extensions.list"
-    
-    echo ""
-    print_step "Extensions installation complete!"
-}
-
 apply_settings() {
     print_step "Applying settings..."
     
@@ -103,8 +80,7 @@ main() {
     
     echo -e "${BLUE}This script will:${NC}"
     echo "  1. Backup your current VS Code settings"
-    echo "  2. Install all extensions from extensions.list"
-    echo "  3. Apply settings from settings.json"
+    echo "  2. Apply settings from settings.json"
     echo ""
     
     read -p "Do you want to continue? (y/N) " -n 1 -r
@@ -117,8 +93,6 @@ main() {
     
     echo ""
     backup_settings
-    echo ""
-    install_extensions
     echo ""
     apply_settings
     
